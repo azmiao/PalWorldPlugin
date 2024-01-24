@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict, List
 
-from pal_class import PalChar
+from .pal_class import PalChar
 
 
 # 读取文件并解析

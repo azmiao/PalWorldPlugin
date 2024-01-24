@@ -2,8 +2,8 @@ import re
 
 from hoshino import Service
 
-from calculate import forward_calculate
-from utils import find_char_by_raw_name
+from .calculate import forward_calculate
+from .utils import find_char_by_raw_name
 
 sv = Service('pal_breeding')
 
