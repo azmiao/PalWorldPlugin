@@ -1,11 +1,12 @@
 import re
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from hoshino import Service
 
 from .calculate import forward_calculate, reverse_calculate
 from .pal_class import PalChar
 from .utils import find_char_by_raw_name
+from ..plugin_utils.page_util import Pagination
 
 sv = Service('pal_breeding')
 
@@ -27,14 +28,16 @@ async def get_calculate(bot, ev):
     message = str(ev.message)
     if not message:
         return
-    match = re.match(r'(.+)\+(.+)=(.+)', message)
+    match = re.match(r'p?(\d+)? ?(.+)\+(.+)=(.+)', message)
     if not match:
         return
 
     # 处理查询
-    mother_raw = match.group(1)
-    father_raw = match.group(2)
-    child_raw = match.group(3)
+    page_num = match.group(1)
+    page_num = int(page_num) if page_num else 1
+    mother_raw = match.group(2)
+    father_raw = match.group(3)
+    child_raw = match.group(4)
     # 查找对应帕鲁
     mother: Optional[PalChar]
     father: Optional[PalChar]
@@ -60,8 +63,19 @@ async def get_calculate(bot, ev):
     if not mother and not father:
         # 根据子代查所有配方
         parent_list = reverse_calculate(child.pal_id)
-        msg = '\n'.join([f'> {pair[0].cn_name} + {pair[1].cn_name} = {child.cn_name}'
-                         for pair in parent_list])
+        # 分页
+        parent_page = Pagination(parent_list, 20)
+        pages = parent_page.get_num_pages()
+        page_data: List[Tuple[PalChar, PalChar]]
+        page_data = parent_page.get_page(page_num)
+        if pages < page_num:
+            await bot.send(ev, f'当前页码[{page_num}]超出最大页码[{pages}]！')
+            return
+        # 生成结果
+        msg = f' = 所有配方({page_num}/{pages}页) = \n'
+        msg += '\n'.join([f'> {pair[0].cn_name} + {pair[1].cn_name} = {child.cn_name}'
+                         for pair in page_data])
+        msg += '\n注：如需要查看其他页请输入"帕鲁配种 p5 ?+?=帕鲁1"，其中5为第五页'
         await bot.send(ev, msg)
         return
 
