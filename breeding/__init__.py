@@ -1,5 +1,5 @@
 import re
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 
 from hoshino import Service
 
@@ -18,9 +18,9 @@ help_msg = f'''
 
 
 # 帮助界面
-@sv.on_fullmatch('帕鲁帮助')
+@sv.on_fullmatch('帕鲁配种帮助')
 async def get_help(bot, ev):
-    await bot.send(ev, '帕鲁配种 帕鲁1+帕鲁2=?')
+    await bot.send(ev, help_msg)
 
 
 @sv.on_prefix('帕鲁配种')
@@ -39,21 +39,22 @@ async def get_calculate(bot, ev):
     father_raw = match.group(3)
     child_raw = match.group(4)
     # 查找对应帕鲁
-    mother: Optional[PalChar]
-    father: Optional[PalChar]
-    child: Optional[PalChar]
-    found, mother = find_char_by_raw_name(mother_raw) if mother_raw != '?' else True, None
-    if not found:
+    mother_found = find_char_by_raw_name(mother_raw) if mother_raw not in ['?', '？'] else (True, None)
+    if not mother_found[0]:
         await bot.send(ev, f'根据父母名称[{mother_raw}]查不到对应帕鲁！')
         return
-    found, father = find_char_by_raw_name(father_raw) if father_raw != '?' else True, None
-    if not found:
+    father_found = find_char_by_raw_name(father_raw) if father_raw not in ['?', '？'] else (True, None)
+    if not father_found[0]:
         await bot.send(ev, f'根据父母名称[{father_raw}]查不到对应帕鲁！')
         return
-    found, child = find_char_by_raw_name(child_raw) if child_raw != '?' else True, None
-    if not found:
+    child_found = find_char_by_raw_name(child_raw) if child_raw not in ['?', '？'] else (True, None)
+    if not child_found[0]:
         await bot.send(ev, f'根据子代名称[{child_raw}]查不到对应帕鲁！')
         return
+    mother = mother_found[1]
+    father = father_found[1]
+    child = child_found[1]
+    sv.logger.info(f'配种查询参数：\n母亲：[{mother}]\n父亲：[{father}]\n孩子：[{child}]')
 
     # 分门别类
     if not mother and not father and not child:

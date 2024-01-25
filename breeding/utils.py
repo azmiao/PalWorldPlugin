@@ -1,7 +1,7 @@
 import itertools
 import json
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from .pal_class import PalChar
 
@@ -74,10 +74,10 @@ def find_child_by_special(
 
 
 # 根据名字和别称寻找唯一
-def find_char_by_raw_name(raw_name: str) -> (bool, PalChar):
+def find_char_by_raw_name(raw_name: str) -> Tuple[bool, Optional[PalChar]]:
     pal_data = read_data()
     pal_char = None
-    for _, value in pal_data.items():
+    for value in pal_data.values():
         if raw_name == value.en_name or raw_name == value.cn_name:
             pal_char = value
             break
