@@ -11,7 +11,7 @@ from ..plugin_utils.page_util import Pagination
 sv = Service('pal_breeding')
 
 
-help_msg = f'''
+help_msg = f'''=== 帕鲁配种帮助 ===
 帕鲁配种 帕鲁1+帕鲁2=?
 帕鲁配种 ?+?=帕鲁1
 帕鲁配种 帕鲁1
@@ -100,31 +100,19 @@ async def get_calculate(bot, ev):
         return
 
     if not mother or not father and not child:
-        # TODO 单个父代可能的配方
+        # 单个父代可能的配方
         await bot.send(ev, '该功能暂不支持！')
         return
 
     if not mother or not father and child:
         # 通过单个父母和子代查另一位父母
         parent = mother if mother else father
-        parent_list = reverse_calculate_with_parent(child.pal_id, parent.pal_id)
-        if not parent_list:
+        other_parent = reverse_calculate_with_parent(child.pal_id, parent.pal_id)
+        if not other_parent:
             await bot.send(ev, f'根据当前子代[{child.cn_name}]和父母[{parent.cn_name}]查询不到另一位父母！')
             return
-        # 分页
-        parent_page = Pagination(parent_list, 20)
-        pages = parent_page.get_num_pages()
-        page_data: List[Tuple[PalChar, PalChar]]
-        page_data = parent_page.get_page(page_num)
-        if pages < page_num:
-            await bot.send(ev, f'当前页码[{page_num}]超出最大页码[{pages}]！')
-            return
-        # 生成结果
-        msg = f' = 配方(当前第{page_num}页/共{pages}页) = \n'
-        msg += '\n'.join([f'> {pair[0].cn_name} + {pair[1].cn_name} = {child.cn_name}'
-                         for pair in page_data])
-        msg += '\n\n注：如需要查看其他页请输入"帕鲁配种 p5 帕鲁1+?=帕鲁2"，其中5为第5页'
-        await bot.send(ev, msg)
+        await bot.send(ev, f'> {parent.cn_name} + {other_parent.cn_name} = {child.cn_name}')
+        return 
 
     if mother or father and not child:
         # 根据父母查子代
