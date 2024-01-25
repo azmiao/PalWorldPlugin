@@ -5,7 +5,7 @@
         "en_name": "Lamball",
         "cn_name": "棉悠悠",
         "power": 1470,
-        "alias": []
+        "alias": ["小羊", "小绵羊", "绵羊"]
     },
     "1000201": {
         "pal_id": "1000201",
@@ -21,7 +21,7 @@
         "en_name": "Chikipi",
         "cn_name": "皮皮鸡",
         "power": 1500,
-        "alias": []
+        "alias": ["小鸡", "坤坤"]
     },
     "1000401": {
         "pal_id": "1000401",
@@ -37,7 +37,7 @@
         "en_name": "Foxparks",
         "cn_name": "火绒狐",
         "power": 1400,
-        "alias": []
+        "alias": ["喷火狐"]
     },
     "1000601": {
         "pal_id": "1000601",
@@ -61,7 +61,7 @@
         "en_name": "Tanzee",
         "cn_name": "新叶猿",
         "power": 1250,
-        "alias": []
+        "alias": ["小猴", "小猴子"]
     },
     "1000901": {
         "pal_id": "1000901",
@@ -77,7 +77,7 @@
         "en_name": "Pengullet",
         "cn_name": "企丸丸",
         "power": 1350,
-        "alias": []
+        "alias": ["企鹅", "小企鹅"]
     },
     "1001101": {
         "pal_id": "1001101",
@@ -85,7 +85,7 @@
         "en_name": "Penking",
         "cn_name": "企丸王",
         "power": 520,
-        "alias": []
+        "alias": ["企鹅王"]
     },
     "1001201": {
         "pal_id": "1001201",
@@ -93,7 +93,7 @@
         "en_name": "Jolthog",
         "cn_name": "电棘鼠",
         "power": 1370,
-        "alias": []
+        "alias": ["电刺猬"]
     },
     "1001202": {
         "pal_id": "1001202",
@@ -101,7 +101,7 @@
         "en_name": "Jolthog Cryst",
         "cn_name": "冰刺鼠",
         "power": 1360,
-        "alias": []
+        "alias": ["冰刺猬"]
     },
     "1001301": {
         "pal_id": "1001301",
@@ -141,7 +141,7 @@
         "en_name": "Teafant",
         "cn_name": "壶小象",
         "power": 1490,
-        "alias": []
+        "alias": ["喷水象"]
     },
     "1001701": {
         "pal_id": "1001701",
@@ -173,7 +173,7 @@
         "en_name": "Rushoar",
         "cn_name": "草莽猪",
         "power": 1130,
-        "alias": []
+        "alias": ["小猪", "小野猪", "野猪"]
     },
     "1002101": {
         "pal_id": "1002101",
@@ -237,7 +237,7 @@
         "en_name": "Tocotoco",
         "cn_name": "炸蛋鸟",
         "power": 1340,
-        "alias": []
+        "alias": ["炸弹鸟"]
     },
     "1002801": {
         "pal_id": "1002801",
@@ -269,7 +269,7 @@
         "en_name": "Gobfin",
         "cn_name": "鲨小子",
         "power": 1090,
-        "alias": []
+        "alias": ["小鲨鱼", "鲨鱼"]
     },
     "1003102": {
         "pal_id": "1003102",
@@ -389,7 +389,7 @@
         "en_name": "Cinnamoth",
         "cn_name": "幻悦蝶",
         "power": 490,
-        "alias": []
+        "alias": ["蝴蝶"]
     },
     "1004201": {
         "pal_id": "1004201",
@@ -405,7 +405,7 @@
         "en_name": "Dumud",
         "cn_name": "趴趴鲶",
         "power": 895,
-        "alias": []
+        "alias": ["鲶鱼", "大鲶鱼"]
     },
     "1004401": {
         "pal_id": "1004401",
@@ -413,7 +413,7 @@
         "en_name": "Cawgnito",
         "cn_name": "黑鸦隐士",
         "power": 1080,
-        "alias": []
+        "alias": ["乌鸦"]
     },
     "1004501": {
         "pal_id": "1004501",
@@ -421,7 +421,7 @@
         "en_name": "Leezpunk",
         "cn_name": "朋克蜥",
         "power": 1120,
-        "alias": []
+        "alias": ["蜥蜴"]
     },
     "1004502": {
         "pal_id": "1004502",
@@ -453,7 +453,7 @@
         "en_name": "Robinquill",
         "cn_name": "羽箭射手",
         "power": 1020,
-        "alias": []
+        "alias": ["羽箭"]
     },
     "1004802": {
         "pal_id": "1004802",
@@ -469,7 +469,7 @@
         "en_name": "Gorirat",
         "cn_name": "铁拳猿",
         "power": 1040,
-        "alias": []
+        "alias": ["铁拳猴"]
     },
     "1005001": {
         "pal_id": "1005001",
@@ -485,7 +485,7 @@
         "en_name": "Elizabee",
         "cn_name": "女皇蜂",
         "power": 330,
-        "alias": []
+        "alias": ["女王蜂"]
     },
     "1005201": {
         "pal_id": "1005201",
@@ -517,7 +517,7 @@
         "en_name": "Chillet",
         "cn_name": "疾旋鼬",
         "power": 800,
-        "alias": []
+        "alias": ["臭鼬"]
     },
     "1005601": {
         "pal_id": "1005601",
@@ -589,7 +589,7 @@
         "en_name": "Lunaris",
         "cn_name": "秘斯媞雅",
         "power": 1110,
-        "alias": []
+        "alias": ["米斯提亚"]
     },
     "1006401": {
         "pal_id": "1006401",
@@ -637,7 +637,7 @@
         "en_name": "Digtoise",
         "cn_name": "碎岩龟",
         "power": 850,
-        "alias": []
+        "alias": ["乌龟"]
     },
     "1006801": {
         "pal_id": "1006801",
@@ -669,7 +669,7 @@
         "en_name": "Vanwyrm",
         "cn_name": "烽歌龙",
         "power": 660,
-        "alias": []
+        "alias": ["烽哥龙"]
     },
     "1007102": {
         "pal_id": "1007102",
@@ -677,7 +677,7 @@
         "en_name": "Vanwyrm Cryst",
         "cn_name": "霜歌龙",
         "power": 620,
-        "alias": []
+        "alias": ["霜哥龙"]
     },
     "1007201": {
         "pal_id": "1007201",
@@ -685,7 +685,7 @@
         "en_name": "Bushi",
         "cn_name": "浪刃武士",
         "power": 640,
-        "alias": []
+        "alias": ["武士"]
     },
     "1007301": {
         "pal_id": "1007301",

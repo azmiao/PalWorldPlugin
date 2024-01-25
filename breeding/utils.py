@@ -1,6 +1,7 @@
+import itertools
 import json
 import os
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from .pal_class import PalChar
 
@@ -58,7 +59,7 @@ def find_nearest_power(special_data: dict, pal_data: Dict[str, PalChar], power: 
     return prev_data, next_data
 
 
-# 先找特殊表
+# 特殊表 | 根据父母查子代
 def find_child_by_special(
         special_data: Dict[str, List[str]],
         pal_data: Dict[str, PalChar],
@@ -73,7 +74,7 @@ def find_child_by_special(
 
 
 # 根据名字和别称寻找唯一
-def find_char_by_raw_name(raw_name: str) -> PalChar:
+def find_char_by_raw_name(raw_name: str) -> (bool, PalChar):
     pal_data = read_data()
     pal_char = None
     for _, value in pal_data.items():
@@ -84,4 +85,29 @@ def find_char_by_raw_name(raw_name: str) -> PalChar:
             if raw_name == alias:
                 pal_char = value
                 break
-    return pal_char
+    return pal_char is not None, pal_char
+
+
+# 查询power组合
+def find_power_combinations(
+        special_data: Dict[str, List[str]],
+        data: Dict[str, PalChar],
+        prev_power: int,
+        next_power: int,
+        prev_equal: bool,
+        next_equal: bool) -> List[Tuple[PalChar, PalChar]]:
+    # 排除掉特殊的
+    power_values = []
+    for key, value in data.items():
+        if key not in special_data:
+            power_values.append(value.power)
+    combinations = list(itertools.combinations(power_values, 2))
+
+    result = []
+    # 获取排列组合枚举
+    for pair in combinations:
+        if (prev_equal and pair[0] + pair[1] >= prev_power) and (next_equal and pair[0] + pair[1] <= next_power):
+            for pal1, pal2 in itertools.combinations(data.values(), 2):
+                if pal1.power == pair[0] and pal2.power == pair[1]:
+                    result.append((pal1, pal2))
+    return result

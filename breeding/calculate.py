@@ -39,3 +39,42 @@ def forward_calculate(mother_id: str, father_id: str) -> PalChar:
             next_index = index_list.index(next_data.en_name)
             child = prev_data if prev_index < next_index else next_data
     return child
+
+
+# 逆向查询 | 根据子代查父母
+def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
+    pal_data = read_data()
+    special_data = read_special()
+    index_list = read_index()
+
+    # 当前子代
+    child_data = pal_data.get(child_id, None)
+    child_power = child_data.power
+
+    # 先找特殊表
+    if child_id in special_data:
+        parent_tuple = special_data.get(child_id)
+        return [(parent_tuple[0], parent_tuple[1])]
+
+    # 再查普通图鉴表
+
+    # 1.先获取当前子代对应power前后两个的帕鲁
+    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power)
+    # 一方为None说明到头了 | 该子代无法杂交生成
+    if prev_data is None or next_data is None:
+        return [(child_data, child_data)]
+
+    # 2.判断一下三个的索引并求取值区间 | 前后的某一个小于当前子代：不能取到中间值（开区间），否则能取到（闭区间）
+    child_index = index_list.index(child_data.en_name)
+    prev_index = index_list.index(prev_data.en_name)
+    next_index = index_list.index(next_data.en_name)
+
+    prev_equal = False if prev_index < child_index else True
+    next_equal = False if next_index < child_index else True
+
+    # 3.计算父母power总和的可能值
+    prev_sum_power = child_data.power + prev_data.power
+    next_sum_power = child_data.power + next_data.power
+
+    # 4.生成枚举列表并合并特殊
+    return find_power_combinations(special_data, pal_data, prev_sum_power, next_sum_power, prev_equal, next_equal)

@@ -11,7 +11,7 @@ class PalChar:
         self.power = power
         self.alias = alias
 
-    def to_json(self):
+    def __str__(self):
         return json.dumps({
             "pal_id": self.pal_id,
             "number": self.number,
