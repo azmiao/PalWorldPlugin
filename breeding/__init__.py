@@ -30,7 +30,7 @@ async def get_calculate(bot, ev):
     message = str(ev.message)
     if not message:
         return
-    match = re.match(r'p?(\d+)? ?(.+)\+(.+)=(.+)', message)
+    match = re.match(r'p?(\d+)? ?(.+)\+(.+)[=＝](.+)', message)
     if not match:
         # 优先完整匹配
         match = re.match(r'p?(\d+)? ?(.+)', message)
@@ -46,9 +46,9 @@ async def get_calculate(bot, ev):
         # 处理查询
         page_num = match.group(1)
         page_num = int(page_num) if page_num else 1
-        mother_raw = match.group(2)
-        father_raw = match.group(3)
-        child_raw = match.group(4)
+        mother_raw = match.group(2).strip()
+        father_raw = match.group(3).strip()
+        child_raw = match.group(4).strip()
 
         # 查找对应帕鲁
         mother_found = find_char_by_raw_name(mother_raw) if mother_raw not in ['?', '？'] else (True, None)
