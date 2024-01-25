@@ -14,6 +14,7 @@ sv = Service('pal_breeding')
 help_msg = f'''
 帕鲁配种 帕鲁1+帕鲁2=?
 帕鲁配种 ?+?=帕鲁1
+帕鲁配种 帕鲁1
 '''.strip()
 
 
@@ -30,22 +31,24 @@ async def get_calculate(bot, ev):
         return
     match = re.match(r'p?(\d+)? ?(.+)\+(.+)=(.+)', message)
     if not match:
-        return
-
-    # 处理查询
-    all_raw = match.group(0).strip()
-    page_num = match.group(1)
-    page_num = int(page_num) if page_num else 1
-    mother_raw = match.group(2)
-    father_raw = match.group(3)
-    child_raw = match.group(4)
-    # 优先整个查询
-    all_found = find_char_by_raw_name(all_raw)
-    if all_found[0]:
+        # 优先完整匹配
+        match = re.match(r'p?(\d+)? ?(.+)', message)
+        all_found = find_char_by_raw_name(match.group(2))
+        if not all_found[0]:
+            return
+        page_num = match.group(1)
+        page_num = int(page_num) if page_num else 1
         mother = None
         father = None
         child = all_found[1]
     else:
+        # 处理查询
+        page_num = match.group(1)
+        page_num = int(page_num) if page_num else 1
+        mother_raw = match.group(2)
+        father_raw = match.group(3)
+        child_raw = match.group(4)
+
         # 查找对应帕鲁
         mother_found = find_char_by_raw_name(mother_raw) if mother_raw not in ['?', '？'] else (True, None)
         if not mother_found[0]:
@@ -62,6 +65,7 @@ async def get_calculate(bot, ev):
         mother = mother_found[1]
         father = father_found[1]
         child = child_found[1]
+
     sv.logger.info(f'配种查询参数：\n母亲：[{mother}]\n父亲：[{father}]\n孩子：[{child}]')
 
     # 分门别类
@@ -87,18 +91,18 @@ async def get_calculate(bot, ev):
         msg = f' = 配方(当前第{page_num}页/共{pages}页) = \n'
         msg += '\n'.join([f'> {pair[0].cn_name} + {pair[1].cn_name} = {child.cn_name}'
                          for pair in page_data])
-        msg += '\n注：如需要查看其他页请输入"帕鲁配种 p5 ?+?=帕鲁1"，其中5为第五页'
+        msg += '\n\n注：如需要查看其他页请输入"帕鲁配种 p5 帕鲁1"或者"帕鲁配种 p5 ?+?=帕鲁1"，其中5为第五页'
         await bot.send(ev, msg)
         return
 
     if not mother or not father and not child:
         # TODO 单个父代可能的配方
-        await bot.send(ev, '该功能还没做！')
+        await bot.send(ev, '该功能暂不支持！')
         return
 
     if not mother or not father and child:
         # TODO 通过父代子代查母
-        await bot.send(ev, '该功能还没做！')
+        await bot.send(ev, '该功能暂不支持！')
         return
 
     if mother or father and not child:
