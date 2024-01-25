@@ -20,3 +20,6 @@ class PalChar:
             "power": self.power,
             "alias": self.alias
         })
+
+    def __eq__(self, other):
+        return self.pal_id == other.pal_id
