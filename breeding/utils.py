@@ -111,7 +111,11 @@ def find_power_combinations(
     result = []
     # 获取排列组合枚举
     for pair in combinations:
-        if (prev_equal and pair[0] + pair[1] >= prev_power) and (next_equal and pair[0] + pair[1] <= next_power):
+        if (((prev_equal and pair[0] + pair[1] >= prev_power)
+             or (not prev_equal and pair[0] + pair[1] > prev_power))
+                and
+                ((next_equal and pair[0] + pair[1] <= next_power)
+                 or (not next_equal and pair[0] + pair[1] < next_power))):
             for pal1, pal2 in itertools.combinations(data.values(), 2):
                 if pal1.power == pair[0] and pal2.power == pair[1]:
                     result.append((pal1, pal2))
