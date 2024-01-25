@@ -23,7 +23,7 @@ def forward_calculate(mother_id: str, father_id: str) -> PalChar:
     # 寻找最接近的前后两条数据
     prev_data: PalChar
     next_data: PalChar
-    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power)
+    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power, True)
     # 一方为None就取另一方
     if prev_data is None or next_data is None:
         child = prev_data if prev_data is not None else next_data
@@ -54,12 +54,12 @@ def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
     # 先找特殊表
     if child_id in special_data:
         parent_tuple = special_data.get(child_id)
-        return [(parent_tuple[0], parent_tuple[1])]
+        return [(pal_data.get(parent_tuple[0]), pal_data.get(parent_tuple[1]))]
 
     # 再查普通图鉴表
 
     # 1.先获取当前子代对应power前后两个的帕鲁
-    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power)
+    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power, False)
     # 一方为None说明到头了 | 该子代无法杂交生成
     if prev_data is None or next_data is None:
         return [(child_data, child_data)]

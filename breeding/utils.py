@@ -34,7 +34,11 @@ def read_special() -> dict:
 
 
 # 寻找最接近的前后两条数据
-def find_nearest_power(special_data: dict, pal_data: Dict[str, PalChar], power: float) -> (PalChar, PalChar):
+def find_nearest_power(
+        special_data: dict,
+        pal_data: Dict[str, PalChar],
+        power: float,
+        have_self: bool) -> (PalChar, PalChar):
     sorted_data = sorted(pal_data.values(), key=lambda x: x.power)
     # 寻找最接近的前一条数据
     prev_data = None
@@ -42,17 +46,18 @@ def find_nearest_power(special_data: dict, pal_data: Dict[str, PalChar], power: 
         # 去除特殊
         if data.pal_id in special_data:
             continue
-        if data.power <= power:
+        if (have_self and data.power <= power) or (not have_self and data.power < power):
             prev_data = data
         else:
             break
     # 寻找最接近的后一条数据
     next_data = None
-    for data in sorted_data[::-1]:
+    sorted_data_reverse = sorted_data[::-1]
+    for data in sorted_data_reverse:
         # 去除特殊
         if data.pal_id in special_data:
             continue
-        if data.power >= power:
+        if (have_self and data.power >= power) or (not have_self and data.power > power):
             next_data = data
         else:
             break
