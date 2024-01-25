@@ -78,3 +78,13 @@ def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
 
     # 4.生成枚举列表并合并特殊
     return find_power_combinations(special_data, pal_data, prev_sum_power, next_sum_power, prev_equal, next_equal)
+
+
+# 逆向查询 | 根据子代和父亲查母亲
+def reverse_calculate_with_parent(child_id: str, parent_id):
+    pal_data = read_data()
+    parent_data = pal_data.get(parent_id)
+    # 查所有的列表
+    parent_list = reverse_calculate(child_id)
+
+    return list(filter(lambda parent_tuple: parent_data in parent_tuple, parent_list))
