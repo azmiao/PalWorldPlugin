@@ -48,7 +48,7 @@ https://github.com/azmiao/PalWorldPlugin
     git clone https://github.com/azmiao/PalWorldPlugin
     ```
 
-2. 安装依赖（暂时不需要，请跳过这步）：
+2. 安装依赖：
 
     到HoshinoBot\hoshino\modules\PalWorldPlugin目录下，管理员方式打开powershell
     ```

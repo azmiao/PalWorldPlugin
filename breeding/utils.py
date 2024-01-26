@@ -7,7 +7,7 @@ from .pal_class import PalChar
 
 
 # 读取文件并解析
-def read_data() -> Dict[str, PalChar]:
+async def read_data() -> Dict[str, PalChar]:
     characters = {}
     with open(os.path.join(os.path.dirname(__file__), 'base_data', 'pal_data.json'), 'r', encoding='utf-8') as file:
         data = json.load(file)
@@ -19,22 +19,29 @@ def read_data() -> Dict[str, PalChar]:
     return characters
 
 
+# 按power逆向排序
+async def read_data_sort_by_power() -> List[PalChar]:
+    pal_data = await read_data()
+    pal_list = list(pal_data.values())
+    return sorted(pal_list, key=lambda x: x.power, reverse=True)
+
+
 # 获取角色索引
-def read_index() -> list:
+async def read_index() -> List[str]:
     with open(os.path.join(os.path.dirname(__file__), 'base_data', 'char_index.json'), 'r', encoding='utf-8') as file:
         data = json.load(file)
     return list(data)
 
 
 # 获取特殊配表
-def read_special() -> dict:
+async def read_special() -> dict:
     with open(os.path.join(os.path.dirname(__file__), 'base_data', 'special_data.json'), 'r', encoding='utf-8') as file:
         data = json.load(file)
     return dict(data)
 
 
 # 寻找最接近的前后两条数据
-def find_nearest_power(
+async def find_nearest_power(
         special_data: dict,
         pal_data: Dict[str, PalChar],
         power: float,
@@ -65,7 +72,7 @@ def find_nearest_power(
 
 
 # 特殊表 | 根据父母查子代
-def find_child_by_special(
+async def find_child_by_special(
         special_data: Dict[str, List[str]],
         pal_data: Dict[str, PalChar],
         mother_id: str,
@@ -79,8 +86,8 @@ def find_child_by_special(
 
 
 # 根据名字和别称寻找唯一
-def find_char_by_raw_name(raw_name: str) -> Tuple[bool, Optional[PalChar]]:
-    pal_data = read_data()
+async def find_char_by_raw_name(raw_name: str) -> Tuple[bool, Optional[PalChar]]:
+    pal_data = await read_data()
     pal_char = None
     for value in pal_data.values():
         if raw_name == value.en_name or raw_name == value.cn_name:
@@ -94,7 +101,7 @@ def find_char_by_raw_name(raw_name: str) -> Tuple[bool, Optional[PalChar]]:
 
 
 # 查询power组合
-def find_power_combinations(
+async def find_power_combinations(
         special_data: Dict[str, List[str]],
         data: Dict[str, PalChar],
         prev_power: int,
@@ -120,3 +127,8 @@ def find_power_combinations(
                 if pal1.power == pair[0] and pal2.power == pair[1]:
                     result.append((pal1, pal2))
     return result
+
+
+# 转图片路径
+async def get_img_cq(img_path):
+    return f'[CQ:image,file=file:///{os.path.abspath(img_path)}]'

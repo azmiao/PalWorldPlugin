@@ -2,12 +2,12 @@ from .utils import *
 
 
 # 正向查询 | 根据父母查询子代
-def forward_calculate(mother_id: str, father_id: str) -> PalChar:
-    pal_data = read_data()
-    special_data = read_special()
+async def forward_calculate(mother_id: str, father_id: str) -> PalChar:
+    pal_data = await read_data()
+    special_data = await read_special()
 
     # 先找特殊表 | 找到就不用后面的了
-    special_char = find_child_by_special(special_data, pal_data, mother_id, father_id)
+    special_char = await find_child_by_special(special_data, pal_data, mother_id, father_id)
     if special_char:
         return special_char
 
@@ -23,7 +23,7 @@ def forward_calculate(mother_id: str, father_id: str) -> PalChar:
     # 寻找最接近的前后两条数据
     prev_data: PalChar
     next_data: PalChar
-    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power, True)
+    prev_data, next_data = await find_nearest_power(special_data, pal_data, child_power, True)
     # 一方为None就取另一方
     if prev_data is None or next_data is None:
         child = prev_data if prev_data is not None else next_data
@@ -34,7 +34,7 @@ def forward_calculate(mother_id: str, father_id: str) -> PalChar:
         child = prev_data if prev_delta < next_delta else next_data
         # 相等的话 | 优先先出的角色
         if prev_delta == next_delta:
-            index_list = read_index()
+            index_list = await read_index()
             prev_index = index_list.index(prev_data.en_name)
             next_index = index_list.index(next_data.en_name)
             child = prev_data if prev_index < next_index else next_data
@@ -42,10 +42,10 @@ def forward_calculate(mother_id: str, father_id: str) -> PalChar:
 
 
 # 逆向查询 | 根据子代查父母
-def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
-    pal_data = read_data()
-    special_data = read_special()
-    index_list = read_index()
+async def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
+    pal_data = await read_data()
+    special_data = await read_special()
+    index_list = await read_index()
 
     # 当前子代
     child_data = pal_data.get(child_id, None)
@@ -59,7 +59,7 @@ def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
     # 再查普通图鉴表
 
     # 1.先获取当前子代对应power前后两个的帕鲁
-    prev_data, next_data = find_nearest_power(special_data, pal_data, child_power, False)
+    prev_data, next_data = await find_nearest_power(special_data, pal_data, child_power, False)
     # 一方为None说明到头了 | 该子代无法杂交生成
     if prev_data is None or next_data is None:
         return [(child_data, child_data)]
@@ -77,13 +77,13 @@ def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
     next_sum_power = child_data.power + next_data.power
 
     # 4.生成枚举列表并合并特殊
-    return find_power_combinations(special_data, pal_data, prev_sum_power, next_sum_power, prev_equal, next_equal)
+    return await find_power_combinations(special_data, pal_data, prev_sum_power, next_sum_power, prev_equal, next_equal)
 
 
 # 逆向查询 | 根据子代和父亲查母亲
-def reverse_calculate_with_parent(child_id: str, parent_id: str) -> List[Tuple[PalChar, PalChar]]:
-    pal_data = read_data()
+async def reverse_calculate_with_parent(child_id: str, parent_id: str) -> List[Tuple[PalChar, PalChar]]:
+    pal_data = await read_data()
     parent_data = pal_data.get(parent_id)
     # 查所有的列表
-    parent_list = reverse_calculate(child_id)
+    parent_list = await reverse_calculate(child_id)
     return list(filter(lambda parent_tuple: parent_data in parent_tuple, parent_list))

@@ -4,6 +4,7 @@ from typing import List, Tuple
 from hoshino import Service
 
 from .calculate import forward_calculate, reverse_calculate, reverse_calculate_with_parent
+from .image import send_image
 from .pal_class import PalChar
 from .utils import find_char_by_raw_name
 from ..plugin_utils.page_util import Pagination
@@ -12,6 +13,7 @@ sv = Service('pal_breeding')
 
 
 help_msg = f'''=== 帕鲁配种帮助 ===
+繁殖力表
 帕鲁配种 帕鲁1+帕鲁2=?
 帕鲁配种 ?+?=帕鲁1
 帕鲁配种 帕鲁1
@@ -34,7 +36,7 @@ async def get_calculate(bot, ev):
     if not match:
         # 优先完整匹配
         match = re.match(r'p?(\d+)? ?(.+)', message)
-        all_found = find_char_by_raw_name(match.group(2))
+        all_found = await find_char_by_raw_name(match.group(2))
         if not all_found[0]:
             return
         page_num = match.group(1)
@@ -51,15 +53,15 @@ async def get_calculate(bot, ev):
         child_raw = match.group(4).strip()
 
         # 查找对应帕鲁
-        mother_found = find_char_by_raw_name(mother_raw) if mother_raw not in ['?', '？'] else (True, None)
+        mother_found = await find_char_by_raw_name(mother_raw) if mother_raw not in ['?', '？'] else (True, None)
         if not mother_found[0]:
             await bot.send(ev, f'根据父母名称[{mother_raw}]查不到对应帕鲁！')
             return
-        father_found = find_char_by_raw_name(father_raw) if father_raw not in ['?', '？'] else (True, None)
+        father_found = await find_char_by_raw_name(father_raw) if father_raw not in ['?', '？'] else (True, None)
         if not father_found[0]:
             await bot.send(ev, f'根据父母名称[{father_raw}]查不到对应帕鲁！')
             return
-        child_found = find_char_by_raw_name(child_raw) if child_raw not in ['?', '？'] else (True, None)
+        child_found = await find_char_by_raw_name(child_raw) if child_raw not in ['?', '？'] else (True, None)
         if not child_found[0]:
             await bot.send(ev, f'根据子代名称[{child_raw}]查不到对应帕鲁！')
             return
@@ -79,7 +81,7 @@ async def get_calculate(bot, ev):
 
     if not mother and not father:
         # 根据子代查所有配方
-        parent_list = reverse_calculate(child.pal_id)
+        parent_list = await reverse_calculate(child.pal_id)
         if not parent_list:
             await bot.send(ev, f'当前帕鲁[{child.cn_name}]繁殖力过低，仅能与自己繁殖！')
             return
@@ -107,7 +109,7 @@ async def get_calculate(bot, ev):
     if not mother or not father and child:
         # 通过单个父母和子代查另一位父母
         parent = mother if mother else father
-        parent_list = reverse_calculate_with_parent(child.pal_id, parent.pal_id)
+        parent_list = await reverse_calculate_with_parent(child.pal_id, parent.pal_id)
         if not parent_list:
             await bot.send(ev, f'根据当前子代[{child.cn_name}]和父母[{parent.cn_name}]查询不到另一位父母！')
             return
@@ -128,7 +130,13 @@ async def get_calculate(bot, ev):
 
     if mother or father and not child:
         # 根据父母查子代
-        child = forward_calculate(mother.pal_id, father.pal_id)
+        child = await forward_calculate(mother.pal_id, father.pal_id)
         await bot.send(ev, f'> {mother.cn_name} + {father.cn_name} = {child.cn_name}')
     else:
         await bot.send(ev, '格式错误，请检查！')
+
+
+@sv.on_fullmatch('繁殖力表')
+async def get_breed_chart(bot, ev):
+    msg = await send_image()
+    await bot.send(ev, msg)
