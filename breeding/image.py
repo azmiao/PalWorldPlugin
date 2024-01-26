@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from hoshino import R
 from prettytable import PrettyTable
 
-from utils import *
+from .utils import *
 
 
 # 生成图片

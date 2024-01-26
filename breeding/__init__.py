@@ -13,7 +13,7 @@ sv = Service('pal_breeding')
 
 
 help_msg = f'''=== 帕鲁配种帮助 ===
-繁殖力表
+帕鲁繁殖力表
 帕鲁配种 帕鲁1+帕鲁2=?
 帕鲁配种 ?+?=帕鲁1
 帕鲁配种 帕鲁1
@@ -136,7 +136,7 @@ async def get_calculate(bot, ev):
         await bot.send(ev, '格式错误，请检查！')
 
 
-@sv.on_fullmatch('繁殖力表')
+@sv.on_fullmatch('帕鲁繁殖力表')
 async def get_breed_chart(bot, ev):
     msg = await send_image()
     await bot.send(ev, msg)
