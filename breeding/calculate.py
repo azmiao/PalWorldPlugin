@@ -46,6 +46,9 @@ async def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
     pal_data = await read_data()
     special_data = await read_special()
     index_list = await read_index()
+    exclude_list = await read_exclude()
+    if child_id in exclude_list:
+        return []
 
     # 当前子代
     child_data = pal_data.get(child_id, None)

@@ -33,6 +33,13 @@ async def read_index() -> List[str]:
     return list(data)
 
 
+# 获取排除列表
+async def read_exclude() -> List[str]:
+    with open(os.path.join(os.path.dirname(__file__), 'base_data', 'cal_exclude.json'), 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    return list(data)
+
+
 # 获取特殊配表
 async def read_special() -> dict:
     with open(os.path.join(os.path.dirname(__file__), 'base_data', 'special_data.json'), 'r', encoding='utf-8') as file:
@@ -46,12 +53,13 @@ async def find_nearest_power(
         pal_data: Dict[str, PalChar],
         power: float,
         have_self: bool) -> (PalChar, PalChar):
+    exclude_list = await read_exclude()
     sorted_data = sorted(pal_data.values(), key=lambda x: x.power)
     # 寻找最接近的前一条数据
     prev_data = None
     for data in sorted_data:
         # 去除特殊
-        if data.pal_id in special_data:
+        if data.pal_id in special_data or data.pal_id in exclude_list:
             continue
         if (have_self and data.power <= power) or (not have_self and data.power < power):
             prev_data = data
@@ -62,7 +70,7 @@ async def find_nearest_power(
     sorted_data_reverse = sorted_data[::-1]
     for data in sorted_data_reverse:
         # 去除特殊
-        if data.pal_id in special_data:
+        if data.pal_id in special_data or data.pal_id in exclude_list:
             continue
         if (have_self and data.power >= power) or (not have_self and data.power > power):
             next_data = data
