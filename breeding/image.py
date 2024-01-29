@@ -40,4 +40,4 @@ async def send_image():
     path_dir = os.path.join(R.img('PalWorld').path, 'breeding/breed_chart.png')
     if not os.path.exists(path_dir):
         await create_breed_img()
-    return await get_img_cq(path_dir)
+    return R.img('PalWorld/breeding/breed_chart.png').cqcode

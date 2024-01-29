@@ -135,8 +135,3 @@ async def find_power_combinations(
                 if pal1.power == pair[0] and pal2.power == pair[1]:
                     result.append((pal1, pal2))
     return result
-
-
-# 转图片路径
-async def get_img_cq(img_path):
-    return f'[CQ:image,file=file:///{os.path.abspath(img_path)}]'
