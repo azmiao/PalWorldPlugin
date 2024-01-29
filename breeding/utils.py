@@ -2,6 +2,8 @@ import itertools
 import json
 import os
 from typing import Dict, List, Tuple, Optional
+from hoshino.util import pic2b64
+from PIL import Image
 
 from .pal_class import PalChar
 
@@ -139,4 +141,5 @@ async def find_power_combinations(
 
 # 转图片路径
 async def get_img_cq(img_path):
-    return f'[CQ:image,file=file:///{os.path.abspath(img_path)}]'
+    # return f'[CQ:image,file=file:///{os.path.abspath(img_path)}]'
+    return f"[CQ:image,file={pic2b64(Image.open(os.path.abspath(img_path)))}]"
