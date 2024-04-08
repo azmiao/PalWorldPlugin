@@ -1102,5 +1102,21 @@
         "cn_name": "空涡龙",
         "power": 90,
         "alias": []
+    },
+    "1011201": {
+        "pal_id": "1011201",
+        "number": 112,
+        "en_name": "Bellanoir",
+        "cn_name": "贝菈诺娃",
+        "power": 1,
+        "alias": []
+    },
+    "1011202": {
+        "pal_id": "1011202",
+        "number": 112,
+        "en_name": "Bellanoir Libero",
+        "cn_name": "贝菈露洁",
+        "power": 1,
+        "alias": []
     }
 }
