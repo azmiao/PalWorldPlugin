@@ -43,23 +43,27 @@ async def forward_calculate(mother_id: str, father_id: str) -> PalChar:
 
 # 逆向查询 | 根据子代查父母
 async def reverse_calculate(child_id: str) -> List[Tuple[PalChar, PalChar]]:
-    pal_data = await read_data()
-    special_data = await read_special()
-    index_list = await read_index()
-    exclude_list = await read_exclude()
-    if child_id in exclude_list:
-        return []
 
     # 当前子代
+    pal_data = await read_data()
     child_data = pal_data.get(child_id, None)
     child_power = child_data.power
 
     # 先找特殊表
+    special_data = await read_special()
     if child_id in special_data:
         parent_tuple = special_data.get(child_id)
-        return [(pal_data.get(parent_tuple[0]), pal_data.get(parent_tuple[1]))]
+        return [
+            (child_data, child_data),
+            (pal_data.get(parent_tuple[0]), pal_data.get(parent_tuple[1])),
+        ]
+
+    exclude_list = await read_exclude()
+    if child_id in exclude_list:
+        return []
 
     # 再查普通图鉴表
+    index_list = await read_index()
 
     # 1.先获取当前子代对应power前后两个的帕鲁
     prev_data, next_data = await find_nearest_power(special_data, pal_data, child_power, False)
