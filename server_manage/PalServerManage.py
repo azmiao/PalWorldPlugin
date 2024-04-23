@@ -38,12 +38,13 @@ help_msg = f'''=== 帕鲁Rcon帮助 ===
 '''.strip()
 # showplayers和broadcast都是残废，遇到非英文就出问题，broadcast显示不会换行
 
-bind_help1 = "请使用以下指令：\n帕鲁服务器绑定\n服务器ip\nrcon端口\n公钥加密的AdminPassword"
+bind_help1 = "请使用以下指令：\n帕鲁服务器绑定\n服务器ip\nrcon端口\nrestapi端口\n公钥加密的AdminPassword"
 
 bind_help2 = '''
 帕鲁服务器绑定
 192.168.0.10
-25575
+0
+8212
 DHR3peGBwROMsUhwykRoYhizuA375KhUngRRaIkBq8BXZcMEFawcklLZ4VMwiZbpFmDrT7cu273bq2YsaMsv+jmXsK1WBdYM3rQn4jwDcj7f80Q2+o6ek6lieWcKPkAVpXe8oFrcQFsk5yaP8DmzW+JoSyP/NJAIwAbg+JIq1PeO3IKORoTEvJDN6ogd2y1Q1uyW7dEiP0xT635soO5qnujXc62ZwYartBYGSccXntYuCptcWV+KnsV67ic8Z+FSF8P/jypngiIflV5pKvnK3dm1gBaImtfoLN1vpZJWHGE1NCprIFF4VS7kL6muym8aV3NhMfu0AdAoUv+N+H7JKA==
 '''
 
@@ -93,15 +94,15 @@ async def decrypt_admin_password(cipher):
         return [False, "Unkonwn Error: \ne", ""]
 
 @sv.on_prefix("帕鲁服务器绑定")
-async def pal_rcon_register(bot, ev):
+async def pal_server_register(bot, ev):
     is_admin = hoshino.priv.check_priv(ev, hoshino.priv.ADMIN)
     if not is_admin:
         await bot.send("权限不足")
         return 
-    messages = str(ev.message).split("\n")
-    if len(messages) != 3:
+    messages = str(ev.message).split()  # split("\n")在ntqq好像有兼容性问题
+    if len(messages) != 4:
         help_img = "[CQ:image,file=https://s2.loli.net/2024/03/02/NWfxYkHFSndiUap.jpg]"
-        bind_help_forward = render_forward_msg(msg_list = [bind_help1, "为保证AdminPassword不被泄漏，请使用服务端公钥加密后，发送密文", "加密公钥如下：", rsa.get_pub_key(), "请使用RSA加密工具加密AdminPassword，如https://www.toolhelper.cn/AsymmetricEncryption/RSA/", help_img, "例如\n"+bind_help2])
+        bind_help_forward = render_forward_msg(msg_list = [bind_help1, "如果不使用RCON或RESTAPI，请将0作为端口号发送", "为保证AdminPassword不被泄漏，请使用服务端公钥加密后，发送密文", "加密公钥如下：", rsa.get_pub_key(), "请使用RSA加密工具加密AdminPassword，如https://www.toolhelper.cn/AsymmetricEncryption/RSA/", help_img, "例如\n"+bind_help2])
         await bot.send_group_forward_msg(group_id=ev.group_id, messages=bind_help_forward)
         return
     if not is_valid_ip(messages[0].strip()):
@@ -110,23 +111,33 @@ async def pal_rcon_register(bot, ev):
     if not is_valid_port(int(messages[1].strip())):
         await bot.send(ev, f"{messages[1]}不是一个有效的端口号，请检查")
         return
+    if not is_valid_port(int(messages[2].strip())):
+        await bot.send(ev, f"{messages[2]}不是一个有效的端口号，请检查")
+        return
     try:
-        plain_AdminPassword = rsa.decrypt(messages[2].strip())
+        plain_AdminPassword = rsa.decrypt(messages[3].strip())
     except:
         await bot.send(ev, f"密文解密失败！请仔细阅读说明后再试。")
         return 
     server_address = messages[0].strip()
     rcon_port = messages[1].strip()
-    admin_password = messages[2].strip()
+    rest_port = messages[2].strip()
+    work_type = "rest"
+    if int(rest_port) == 0:
+        work_type == "rcon"
+        if int(rcon_port) == 0:
+            await bot.send(ev, f"不能同时将rcon和restapi端口设置为0")
+            return 
+    admin_password = messages[3].strip()
     data = await read_config()
     _ori = data['groups'].get(ev.group_id)  # 可能存在的原配置
-    data['groups'][ev.group_id] = {"server_address":str(server_address), "rcon_port":rcon_port, "admin_password":str(admin_password)}
+    data['groups'][ev.group_id] = {"server_address":str(server_address), "rcon_port":rcon_port, "rest_port":rest_port, "admin_password":str(admin_password), "work_type":work_type}
     await write_config(data)
     if _ori is not None:
-        msg = f"群帕鲁rcon连接信息已经更新！\n原IP: {_ori['server_address']}\n原RCON端口: {_ori['rcon_port']}"
-        msg += f"\n\n新IP: {server_address}\n新RCON端口: {rcon_port}"
+        msg = f"群帕鲁服务器连接信息已经更新！\n原IP: {_ori['server_address']}\n原RCON端口: {_ori['rcon_port']}\n原RESTAPI端口: {_ori.get('rest_port')}"
+        msg += f"\n\n新IP: {server_address}\n新RCON端口: {rcon_port}\n新RESTAPI端口: {rest_port}\n新工作模式: {work_type}"
     else:
-        msg = f"群帕鲁rcon连接信息配置成功！\nIP: {server_address}\nRCON端口: {rcon_port}"
+        msg = f"群帕鲁服务器连接信息配置成功！\nIP: {server_address}\nRCON端口: {rcon_port}\nRESTAPI端口: {rest_port}\n工作模式: {work_type}"
     await bot.send(ev, msg)
 
 @sv.on_fullmatch("帕鲁服务器信息")
