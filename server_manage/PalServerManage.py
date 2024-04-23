@@ -21,7 +21,7 @@ from .RSA import RSAworker, PrivateKeyNotMatchError
 from .util import *
 
 sv = Service(
-    name = 'PalServerRcon',  #功能名
+    name = 'PalServerManage',  #功能名
     use_priv = priv.NORMAL, #使用权限   
     manage_priv = priv.ADMIN, #管理权限
     visible = True, #False隐藏
@@ -29,7 +29,7 @@ sv = Service(
     )
 
 help_msg = f'''=== 帕鲁Rcon帮助 ===
-帕鲁rcon绑定
+帕鲁服务器绑定
 帕鲁服务器信息
 谁在帕鲁
 帕鲁关服
@@ -38,10 +38,10 @@ help_msg = f'''=== 帕鲁Rcon帮助 ===
 '''.strip()
 # showplayers和broadcast都是残废，遇到非英文就出问题，broadcast显示不会换行
 
-bind_help1 = "请使用以下指令：\n帕鲁rcon绑定\n服务器ip\nrcon端口\n公钥加密的AdminPassword"
+bind_help1 = "请使用以下指令：\n帕鲁服务器绑定\n服务器ip\nrcon端口\n公钥加密的AdminPassword"
 
 bind_help2 = '''
-帕鲁rcon绑定
+帕鲁服务器绑定
 192.168.0.10
 25575
 DHR3peGBwROMsUhwykRoYhizuA375KhUngRRaIkBq8BXZcMEFawcklLZ4VMwiZbpFmDrT7cu273bq2YsaMsv+jmXsK1WBdYM3rQn4jwDcj7f80Q2+o6ek6lieWcKPkAVpXe8oFrcQFsk5yaP8DmzW+JoSyP/NJAIwAbg+JIq1PeO3IKORoTEvJDN6ogd2y1Q1uyW7dEiP0xT635soO5qnujXc62ZwYartBYGSccXntYuCptcWV+KnsV67ic8Z+FSF8P/jypngiIflV5pKvnK3dm1gBaImtfoLN1vpZJWHGE1NCprIFF4VS7kL6muym8aV3NhMfu0AdAoUv+N+H7JKA==
@@ -92,7 +92,7 @@ async def decrypt_admin_password(cipher):
     except Exception as e:
         return [False, "Unkonwn Error: \ne", ""]
 
-@sv.on_prefix("帕鲁rcon绑定")
+@sv.on_prefix("帕鲁服务器绑定")
 async def pal_rcon_register(bot, ev):
     is_admin = hoshino.priv.check_priv(ev, hoshino.priv.ADMIN)
     if not is_admin:
@@ -100,7 +100,6 @@ async def pal_rcon_register(bot, ev):
         return 
     messages = str(ev.message).split("\n")
     if len(messages) != 3:
-        help_img = "[CQ:image,file=file://{os.path.join(os.getcwd(),'encrypted_example.jpg')}]"
         help_img = "[CQ:image,file=https://s2.loli.net/2024/03/02/NWfxYkHFSndiUap.jpg]"
         bind_help_forward = render_forward_msg(msg_list = [bind_help1, "为保证AdminPassword不被泄漏，请使用服务端公钥加密后，发送密文", "加密公钥如下：", rsa.get_pub_key(), "请使用RSA加密工具加密AdminPassword，如https://www.toolhelper.cn/AsymmetricEncryption/RSA/", help_img, "例如\n"+bind_help2])
         await bot.send_group_forward_msg(group_id=ev.group_id, messages=bind_help_forward)
@@ -136,7 +135,7 @@ async def pal_server_info(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁rcon绑定”进一步了解。"
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
         SERVER_PORT = group_server_data.get("rcon_port")
@@ -155,7 +154,7 @@ async def pal_server_info(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁rcon绑定”进一步了解。"
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
         SERVER_PORT = group_server_data.get("rcon_port")
@@ -181,7 +180,7 @@ async def pal_server_shutdown(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁rcon绑定”进一步了解。"
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
         SERVER_PORT = group_server_data.get("rcon_port")
@@ -207,7 +206,7 @@ async def pal_server_broadcast(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁rcon绑定”进一步了解。"
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
         SERVER_PORT = group_server_data.get("rcon_port")
@@ -246,7 +245,7 @@ async def pal_server_rcon(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁rcon绑定”进一步了解。"
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
         SERVER_PORT = group_server_data.get("rcon_port")
