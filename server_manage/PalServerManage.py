@@ -178,22 +178,22 @@ async def pal_server_register(bot, ev):
     server_address = messages[0].strip()
     rcon_port = messages[1].strip()
     rest_port = messages[2].strip()
-    work_type = "rest"
+    work_mode = "rest"
     if int(rest_port) == 0:
-        work_type == "rcon"
+        work_mode == "rcon"
         if int(rcon_port) == 0:
             await bot.send(ev, f"不能同时将rcon和restapi端口设置为0")
             return 
     admin_password = messages[3].strip()
     data = await read_config()
     _ori = data['groups'].get(ev.group_id)  # 可能存在的原配置
-    data['groups'][ev.group_id] = {"server_address":str(server_address), "rcon_port":rcon_port, "rest_port":rest_port, "admin_password":str(admin_password), "work_type":work_type}
+    data['groups'][ev.group_id] = {"server_address":str(server_address), "rcon_port":rcon_port, "rest_port":rest_port, "admin_password":str(admin_password), "work_mode":work_mode}
     await write_config(data)
     if _ori is not None:
         msg = f"群帕鲁服务器连接信息已经更新！\n原IP: {_ori['server_address']}\n原RCON端口: {_ori['rcon_port']}\n原RESTAPI端口: {_ori.get('rest_port')}"
-        msg += f"\n\n新IP: {server_address}\n新RCON端口: {rcon_port}\n新RESTAPI端口: {rest_port}\n新工作模式: {work_type}"
+        msg += f"\n\n新IP: {server_address}\n新RCON端口: {rcon_port}\n新RESTAPI端口: {rest_port}\n新工作模式: {work_mode}"
     else:
-        msg = f"群帕鲁服务器连接信息配置成功！\nIP: {server_address}\nRCON端口: {rcon_port}\nRESTAPI端口: {rest_port}\n工作模式: {work_type}"
+        msg = f"群帕鲁服务器连接信息配置成功！\nIP: {server_address}\nRCON端口: {rcon_port}\nRESTAPI端口: {rest_port}\n工作模式: {work_mode}"
     await bot.send(ev, msg)
 
 @sv.on_fullmatch("帕鲁服务器信息")
