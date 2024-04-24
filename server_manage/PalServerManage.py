@@ -211,6 +211,23 @@ async def pal_server_register(bot, ev):
         msg = f"群帕鲁服务器连接信息配置成功！\nIP: {server_address}\nRCON端口: {rcon_port}\nRESTAPI端口: {rest_port}\n工作模式: {work_mode}"
     await bot.send(ev, msg)
 
+@sv.on_fullmatch("帕鲁服务器解绑")
+async def pal_server_unregister(bot, ev):
+    is_admin = hoshino.priv.check_priv(ev, hoshino.priv.ADMIN)
+    if not is_admin:
+        await bot.send("权限不足")
+        return 
+    gid = ev.group_id
+    data = await read_config()
+    group_server_data = data['groups'].get(gid)
+    if group_server_data is None:
+        msg = "群聊还未绑定帕鲁服务器，无需解绑。"
+    else:
+        data['groups'].pop(gid)
+        await write_config(data)
+        msg = "群聊已解绑帕鲁服务器。"
+    await bot.send(ev,msg)
+
 @sv.on_fullmatch("帕鲁服务器信息")
 async def pal_server_info(bot, ev):
     gid = ev.group_id
@@ -363,3 +380,38 @@ async def pal_server_rcon(bot, ev):
         else:
             msg = decrypted[1]
     await bot.send(ev,msg)
+
+
+@sv.on_prefix("帕鲁服务器模式")
+async def pal_server_mode(bot, ev):
+    is_admin = hoshino.priv.check_priv(ev, hoshino.priv.DEFAULT)
+    if not is_admin:
+        await bot.send("权限不足")
+        return
+    # 检查绑定状态
+    gid = ev.group_id
+    data = await read_config()
+    group_server_data = data['groups'].get(gid)
+    if group_server_data is None:
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
+        return 
+    else:
+        data = await read_config()
+        group_server_data = data['groups'].get(gid)
+    
+    mode = str(ev.message).strip()
+    if not mode:  # 查询工作模式
+        now_mode = group_server_data.get("work_mode")
+        if not now_mode:
+            now_mode = "rcon"
+        msg = f"群帕鲁服务器工作模式为{now_mode}！"
+        await bot.send(ev,msg)
+        return
+    elif mode not in ["rest", "rcon"]:
+        await bot.send(ev, "工作模式只能为rest或rcon")
+        return
+    else:  # 设置工作模式
+        group_server_data["work_mode"] = mode
+        await write_config(data)
+        msg = f"群帕鲁服务器工作模式已设置为{mode}！"
+        await bot.send(ev,msg)
