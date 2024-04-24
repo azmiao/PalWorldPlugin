@@ -415,3 +415,45 @@ async def pal_server_mode(bot, ev):
         await write_config(data)
         msg = f"群帕鲁服务器工作模式已设置为{mode}！"
         await bot.send(ev,msg)
+
+
+# 以下待定
+# rest专属 /v1/api/settings
+# @sv.on_fullmatch(("帕鲁服务器设置","帕鲁服务器配置"))
+async def pal_server_setting(bot, ev):
+    is_admin = hoshino.priv.check_priv(ev, hoshino.priv.DEFAULT)
+    if not is_admin:
+        await bot.send("权限不足")
+        return
+    gid = ev.group_id
+    data = await read_config()
+    group_server_data = data['groups'].get(gid)
+    if group_server_data is None:
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
+        return 
+    elif group_server_data.get("work_mode") == "rcon":
+        msg = "rcon模式下无法获取服务器配置信息，请切换至rest模式。"
+    else:
+        # do something
+        pass
+
+# rest专属 /v1/api/metrics
+# @sv.on_fullmatch(("帕鲁服务器状态","帕鲁服务器指标"))
+async def pal_server_metrics(bot, ev):
+    gid = ev.group_id
+    data = await read_config()
+    group_server_data = data['groups'].get(gid)
+    if group_server_data is None:
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
+        return 
+    elif group_server_data.get("work_mode") == "rcon":
+        msg = "rcon模式下无法获取服务器指标，请切换至rest模式。"
+    else:
+        # do something
+        pass
+
+# Kick，非英文游戏名的话，rcon拿不到steamid，所以只能用rest
+# Ban，同上
+# UnBan，同上
+# Save，rcon和rest都可以，但好像没什么必要
+# ForceStop，rcon和rest都可以，但好像没什么必要
