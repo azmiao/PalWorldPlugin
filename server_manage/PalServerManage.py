@@ -195,7 +195,7 @@ async def pal_server_register(bot, ev):
     rest_port = messages[2].strip()
     work_mode = "rest"
     if int(rest_port) == 0:
-        work_mode == "rcon"
+        work_mode = "rcon"
         if int(rcon_port) == 0:
             await bot.send(ev, f"不能同时将rcon和restapi端口设置为0")
             return 
@@ -276,7 +276,7 @@ async def pal_server_info(bot, ev):
                 res = await send_rcon_command(SERVER_ADDRESS, RCON_PORT, SERVER_PASSWORD, "ShowPlayers", timeout=60)
                 res[1] = res[1].replace("\x00\x00","")
                 msg = res[1] if res[0] else "error: " + res[1]
-        await bot.send(ev,msg)
+    await bot.send(ev,msg)
 
 @sv.on_fullmatch("帕鲁关服")
 async def pal_server_shutdown(bot, ev):
