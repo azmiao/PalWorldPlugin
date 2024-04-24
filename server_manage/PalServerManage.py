@@ -77,8 +77,8 @@ async def send_rest_command(SERVER_ADDRESS, SERVER_PORT, SERVER_PASSWORD , actio
     url = f"{base_url}/{action}"  # 构造restapi的url
     auth = base64.b64encode(f"admin:{SERVER_PASSWORD}".encode('utf-8')).decode()  # Basic认证
     method_map = {"info":"GET", 
-                  "palyers": "GET", 
-                  "sessings": "GET", 
+                  "players": "GET", 
+                  "settings": "GET", 
                   "metrics": "GET", 
                   "announce": "POST", 
                   "kick": "POST", 
@@ -113,9 +113,24 @@ async def send_rest_command(SERVER_ADDRESS, SERVER_PORT, SERVER_PASSWORD , actio
             return [_success, "Not found.错误的请求路径，请反馈"]
         elif resp.status_code == 200:   # 正常
             _success = True
-            if method == "GET":
-                resp_content = await resp.json()  # GET请求返回json格式数据
-                return [_success, resp_content]
+            # 手动处理各种情况的返回数据，把json数据拼好看一点
+            if action in ["info", "settings", "metrics"]:
+                resp_json = await resp.json()
+                msg = "" 
+                for key in resp_json:
+                    msg += f"{key}: {resp_json[key]}\n"
+                msg = msg.strip()
+                return [_success, msg]
+            elif action == "players":
+                resp_json = await resp.json()
+                msg = "=====玩家列表=====\n"
+                players = resp_json.get("players")
+                for player in players:
+                    # 没返回ip和坐标。playerId可以定位存档文件，userId是steamid
+                    msg += f"name: {player.get('name')}\nlevel: {player.get('level')}\nplayerId: {player.get('playerId')}\nuserId:{player.get('userId')}\nping:{player.get('ping')}\n"
+                    msg += "==================\n"
+                msg = msg.strip()
+                return [_success, msg]
             else:  # POST请求返回一个OK
                 return [_success, (await resp.content).decode()]
         else:  # 其他错误
@@ -205,14 +220,19 @@ async def pal_server_info(bot, ev):
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
-        SERVER_PORT = group_server_data.get("rcon_port")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
         decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
-        if decrypted[0]:
-            RCON_PASSWORD = decrypted[2]
-            res = await send_rcon_command(SERVER_ADDRESS, SERVER_PORT, RCON_PASSWORD, "Info")
-            msg = res[1] if res[0] else "error: " + res[1]
-        else:
+        if not decrypted[0]:  # 解密失败:
             msg = decrypted[1]
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            if group_server_data.get("work_mode") == "rest":  # 工作模式为rest
+                res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "info")
+                msg = res[1] if res[0] else "error: " + res[1]
+            else:  # 工作模式为空或rcon
+                res = await send_rcon_command(SERVER_ADDRESS, RCON_PORT, SERVER_PASSWORD, "Info")
+                msg = res[1] if res[0] else "error: " + res[1]
     await bot.send(ev,msg)
 
 @sv.on_fullmatch("谁在帕鲁")
@@ -224,18 +244,22 @@ async def pal_server_info(bot, ev):
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
-        SERVER_PORT = group_server_data.get("rcon_port")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
         decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
-        if decrypted[0]:
-            RCON_PASSWORD = decrypted[2]
-            await bot.send(ev, "正在查询，如果服内有ID非英文的玩家，可能需要等待数十秒")
-            res = await send_rcon_command(SERVER_ADDRESS, SERVER_PORT, RCON_PASSWORD, "ShowPlayers", timeout=60)
-            res[1] = res[1].replace("\x00\x00","")
-            # 'name,playeruid,steamid\nスターズオンアース,604703510,\x00\x00'
-            msg = res[1] if res[0] else "error: " + res[1]
-        else:
+        if not decrypted[0]:  # 解密失败:
             msg = decrypted[1]
-    await bot.send(ev,msg)
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            if group_server_data.get("work_mode") == "rest":  # 工作模式为rest
+                res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "players")
+                msg = res[1] if res[0] else "error: " + res[1]
+            else:  # 工作模式为空或rcon
+                await bot.send(ev, "正在查询，如果服内有ID非英文的玩家，可能需要等待数十秒")
+                res = await send_rcon_command(SERVER_ADDRESS, RCON_PORT, SERVER_PASSWORD, "ShowPlayers", timeout=60)
+                res[1] = res[1].replace("\x00\x00","")
+                msg = res[1] if res[0] else "error: " + res[1]
+        await bot.send(ev,msg)
 
 @sv.on_fullmatch("帕鲁关服")
 async def pal_server_shutdown(bot, ev):
@@ -250,14 +274,23 @@ async def pal_server_shutdown(bot, ev):
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
-        SERVER_PORT = group_server_data.get("rcon_port")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
         decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
-        if decrypted[0]:
-            RCON_PASSWORD = decrypted[2]
-            res = await send_rcon_command(SERVER_ADDRESS, SERVER_PORT, RCON_PASSWORD, "Shutdown 10 Server_will_shutdown_in_10s.")
-            msg = res[1] if res[0] else "error: " + res[1]
-        else:
+        if not decrypted[0]:  # 解密失败:
             msg = decrypted[1]
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            if group_server_data.get("work_mode") == "rest":  # 工作模式为rest
+                data = {"waittime": 10,
+                        "message": "服务器将在10秒后关闭，请及时下线"
+                        }
+                res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "shutdown",data=data)
+                msg = res[1] if res[0] else "error: " + res[1]
+            else:  # 工作模式为空或rcon
+                RCON_PASSWORD = decrypted[2]
+                res = await send_rcon_command(SERVER_ADDRESS, RCON_PORT, RCON_PASSWORD, "Shutdown 10 Server_will_shutdown_in_10s.")
+                msg = res[1] if res[0] else "error: " + res[1]
     await bot.send(ev,msg)
 
 @sv.on_prefix("帕鲁广播")
@@ -276,29 +309,35 @@ async def pal_server_broadcast(bot, ev):
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
     else:
         SERVER_ADDRESS = group_server_data.get("server_address")
-        SERVER_PORT = group_server_data.get("rcon_port")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
         decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
-        if decrypted[0]:
-            RCON_PASSWORD = decrypted[2]
-            if any(ord(c) > 127 for c in bc_message):
-                # 包含非ascii字符
-                bc_message = ' '.join(word_list[0] for word_list in pinyin(bc_message, style=Style.TONE3, heteronym=False))
-                await bot.send(ev, "广播内容包含游戏内无法显示的字符，已尝试将其中的汉字转换成拼音，其余文字无法处理，游戏内也无法正常显示。")
-            # 空格等全部换成下划线
-            trans_table = str.maketrans({' ': '_', '\t': '_', '\n': '_', '\r': '_', '\f': '_','，':',','。':'.','？':'?','！':'!'})
-            bc_message_replaced = bc_message.translate(trans_table)
-            # 游戏内广播不会自动换行，所以手动处理，每48个字符换一行
-            bc_message_replaced = "-"*48 + f"broadcast_from_QQ:{uid}__"+bc_message_replaced
-            msg = ""
-            bc_msg_list = [bc_message_replaced[i:i+48] for i in range(0, len(bc_message_replaced), 48)]
-            bc_msg_list.append("-"*48)
-            for bc_msg in bc_msg_list:
-                res = await send_rcon_command(SERVER_ADDRESS, SERVER_PORT, RCON_PASSWORD, f"Broadcast {bc_msg}")
-                msg += res[1] if res[0] else "error: " + res[1] + "\n"
-                await asleep(0.5)# 确保分段消息顺序
-            msg = msg.strip()
-        else:
+        if not decrypted[0]:  # 解密失败:
             msg = decrypted[1]
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            if group_server_data.get("work_mode") == "rest":  # 工作模式为rest
+                data = {"message": f"announce fro QQ{uid}: {bc_message}"}
+                res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "announce",data=data)
+                msg = res[1] if res[0] else "error: " + res[1]
+            else:  # 工作模式为空或rcon
+                if any(ord(c) > 127 for c in bc_message):
+                    # 包含非ascii字符
+                    bc_message = ' '.join(word_list[0] for word_list in pinyin(bc_message, style=Style.TONE3, heteronym=False))
+                    await bot.send(ev, "广播内容包含游戏内无法显示的字符，已尝试将其中的汉字转换成拼音，其余文字无法处理，游戏内也无法正常显示。")
+                # 空格等全部换成下划线
+                trans_table = str.maketrans({' ': '_', '\t': '_', '\n': '_', '\r': '_', '\f': '_','，':',','。':'.','？':'?','！':'!'})
+                bc_message_replaced = bc_message.translate(trans_table)
+                # 游戏内广播不会自动换行，所以手动处理，每48个字符换一行
+                bc_message_replaced = "-"*48 + f"broadcast_from_QQ:{uid}__"+bc_message_replaced
+                msg = ""
+                bc_msg_list = [bc_message_replaced[i:i+48] for i in range(0, len(bc_message_replaced), 48)]
+                bc_msg_list.append("-"*48)
+                for bc_msg in bc_msg_list:
+                    res = await send_rcon_command(SERVER_ADDRESS, RCON_PORT, SERVER_PASSWORD, f"Broadcast {bc_msg}")
+                    msg += res[1] if res[0] else "error: " + res[1] + "\n"
+                    await asleep(0.5)# 确保分段消息顺序
+                msg = msg.strip()
     await bot.send(ev,msg)
 
 @sv.on_prefix("帕鲁rcon")
