@@ -393,33 +393,26 @@ async def pal_server_mode(bot, ev):
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
-        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
-        return 
+        msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。" 
     else:
         data = await read_config()
         group_server_data = data['groups'].get(gid)
-    
-    mode = str(ev.message).strip()
-    if not mode:  # 查询工作模式
-        now_mode = group_server_data.get("work_mode")
-        if not now_mode:
-            now_mode = "rcon"
-        msg = f"群帕鲁服务器工作模式为{now_mode}！"
-        await bot.send(ev,msg)
-        return
-    elif mode not in ["rest", "rcon"]:
-        await bot.send(ev, "工作模式只能为rest或rcon")
-        return
-    else:  # 设置工作模式
-        group_server_data["work_mode"] = mode
-        await write_config(data)
-        msg = f"群帕鲁服务器工作模式已设置为{mode}！"
-        await bot.send(ev,msg)
+        mode = str(ev.message).strip()
+        if not mode:  # 查询工作模式
+            now_mode = group_server_data.get("work_mode")
+            if not now_mode:
+                now_mode = "rcon"
+            msg = f"群帕鲁服务器工作模式为{now_mode}！"
+        elif mode not in ["rest", "rcon"]:
+            msg = "工作模式只能为rest或rcon"
+        else:  # 设置工作模式
+            group_server_data["work_mode"] = mode
+            await write_config(data)
+            msg = f"群帕鲁服务器工作模式已设置为{mode}！"
+    await bot.send(ev,msg)
 
-
-# 以下待定
 # rest专属 /v1/api/settings
-# @sv.on_fullmatch(("帕鲁服务器设置","帕鲁服务器配置"))
+@sv.on_fullmatch(("帕鲁服务器设置","帕鲁服务器配置"))
 async def pal_server_setting(bot, ev):
     is_admin = hoshino.priv.check_priv(ev, hoshino.priv.DEFAULT)
     if not is_admin:
@@ -430,28 +423,45 @@ async def pal_server_setting(bot, ev):
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
-        return 
     elif group_server_data.get("work_mode") == "rcon":
         msg = "rcon模式下无法获取服务器配置信息，请切换至rest模式。"
     else:
-        # do something
-        pass
+        SERVER_ADDRESS = group_server_data.get("server_address")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
+        decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
+        if not decrypted[0]:  # 解密失败:
+            msg = decrypted[1]
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "settings")
+            msg = res[1] if res[0] else "error: " + res[1]
+    await bot.send(ev,msg)
 
 # rest专属 /v1/api/metrics
-# @sv.on_fullmatch(("帕鲁服务器状态","帕鲁服务器指标"))
+@sv.on_fullmatch(("帕鲁服务器状态","帕鲁服务器指标"))
 async def pal_server_metrics(bot, ev):
     gid = ev.group_id
     data = await read_config()
     group_server_data = data['groups'].get(gid)
     if group_server_data is None:
         msg = "群聊还未绑定帕鲁服务器，请发送“帕鲁服务器绑定”进一步了解。"
-        return 
     elif group_server_data.get("work_mode") == "rcon":
         msg = "rcon模式下无法获取服务器指标，请切换至rest模式。"
     else:
-        # do something
-        pass
+        SERVER_ADDRESS = group_server_data.get("server_address")
+        REST_PORT = group_server_data.get("rest_port")
+        RCON_PORT = group_server_data.get("rcon_port")
+        decrypted = await decrypt_admin_password(group_server_data.get("admin_password"))
+        if not decrypted[0]:  # 解密失败:
+            msg = decrypted[1]
+        else:  # 解密成功
+            SERVER_PASSWORD = decrypted[2]
+            res = await send_rest_command(SERVER_ADDRESS, REST_PORT, SERVER_PASSWORD, "metrics")
+            msg = res[1] if res[0] else "error: " + res[1]
+    await bot.send(ev,msg)
 
+# 以下待定
 # Kick，非英文游戏名的话，rcon拿不到steamid，所以只能用rest
 # Ban，同上
 # UnBan，同上
