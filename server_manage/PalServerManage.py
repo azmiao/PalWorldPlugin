@@ -1,5 +1,7 @@
 import yaml
 import binascii
+import base64
+import json
 
 from pypinyin import pinyin, Style
 from asyncio import sleep as asleep
@@ -15,7 +17,7 @@ from rcon.exceptions import WrongPassword
 from asyncio.exceptions import TimeoutError
 
 import hoshino
-from hoshino import Service,priv
+from hoshino import Service,priv,aiorequests
 
 from .RSA import RSAworker, PrivateKeyNotMatchError
 from .util import *
@@ -67,6 +69,60 @@ async def send_rcon_command(SERVER_ADDRESS, SERVER_PORT,RCON_PASSWORD, command, 
     else:
         _success = True
         return [_success, response.strip()]
+
+async def send_rest_command(SERVER_ADDRESS, SERVER_PORT, SERVER_PASSWORD , action, data={}, timeout=3):
+    """异步发送restapi指令"""
+    _success = False
+    base_url = f"http://{SERVER_ADDRESS}:{SERVER_PORT}/v1/api"
+    url = f"{base_url}/{action}"  # 构造restapi的url
+    auth = base64.b64encode(f"admin:{SERVER_PASSWORD}".encode('utf-8')).decode()  # Basic认证
+    method_map = {"info":"GET", 
+                  "palyers": "GET", 
+                  "sessings": "GET", 
+                  "metrics": "GET", 
+                  "announce": "POST", 
+                  "kick": "POST", 
+                  "ban": "POST", 
+                  "unban": "POST", 
+                  "save": "POST", 
+                  "shutdown": "POST", 
+                  "stop": "POST"
+                  }
+    if action not in method_map:
+        return [_success, f"不支持的action: {action}"]
+    method = method_map[action]
+
+    headers = {"Authorization": f"Basic {auth}"}
+    # 根据请求方法设置对应的请求头信息
+    if method == "GET":  
+        headers["Accept"] = "application/json"  # 如果是GET请求，设置Accept字段为application/json
+    else:
+        headers["Content-Type"] = "application/json"  # 如果是POST请求，设置Content-Type字段为application/json
+    
+    # GET不需要payload，置空。POST按接口文档要求设置payload
+    payload = json.dumps(data) if method == "POST" else {}
+
+    try:
+        # 发送请求
+        resp = await aiorequests.request(method, url, headers=headers, data=payload, timeout=timeout)
+        if resp.status_code == 400:  # 代码错误
+            return [_success, "Bad request.请反馈"]
+        elif resp.status_code == 401:  # 认证失败
+            return [_success, "Unauthorized.请检查密码是否正确"]
+        elif resp.status_code == 404:  # 路径不存在，也是代码问题
+            return [_success, "Not found.错误的请求路径，请反馈"]
+        elif resp.status_code == 200:   # 正常
+            _success = True
+            if method == "GET":
+                resp_content = await resp.json()  # GET请求返回json格式数据
+                return [_success, resp_content]
+            else:  # POST请求返回一个OK
+                return [_success, (await resp.content).decode()]
+        else:  # 其他错误
+            return [_success, f"未知错误，状态码：{resp.status_code}"]
+    except Exception as e:  # 有异常
+        return [_success, f"请求失败，错误信息：{str(e)}"]
+
 
 async def read_config():
     '''读配置文件'''
