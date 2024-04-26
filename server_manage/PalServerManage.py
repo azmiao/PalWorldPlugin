@@ -36,7 +36,9 @@ help_msg = f'''=== 帕鲁Rcon帮助 ===
 谁在帕鲁
 帕鲁关服
 帕鲁广播 + 广播内容
-帕鲁rcon指令 + 指令
+帕鲁服务器设置
+帕鲁服务器指标
+帕鲁rcon + 指令
 '''.strip()
 # showplayers和broadcast都是残废，遇到非英文就出问题，broadcast显示不会换行
 
