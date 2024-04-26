@@ -35,14 +35,16 @@ sv = Service(
     enable_on_default = True, #是否默认启用
     )
 
-help_msg = f'''=== 帕鲁Rcon帮助 ===
+help_msg = f'''=== 帕鲁服务器管理帮助 ===
 帕鲁服务器绑定
+帕鲁服务器解绑
 帕鲁服务器信息
 谁在帕鲁
 帕鲁关服
 帕鲁广播 + 广播内容
 帕鲁服务器设置
 帕鲁服务器指标
+帕鲁服务器模式 [rcon|restapi]
 帕鲁rcon + 指令
 '''.strip()
 # showplayers和broadcast都是残废，遇到非英文就出问题，broadcast显示不会换行
@@ -170,6 +172,10 @@ async def decrypt_admin_password(cipher):
         return [False, msg, ""]
     except Exception as e:
         return [False, "Unkonwn Error: \ne", ""]
+
+@sv.on_fullmatch(("帮助帕鲁服务器管理","帮助帕鲁服务端管理"))
+async def pal_server_help(bot, ev):
+    await bot.send(ev, help_msg)
 
 @sv.on_prefix("帕鲁服务器绑定")
 async def pal_server_register(bot, ev):
