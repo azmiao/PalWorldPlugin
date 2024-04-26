@@ -22,6 +22,11 @@ from hoshino import Service,priv,aiorequests
 from .RSA import RSAworker, PrivateKeyNotMatchError
 from .util import *
 
+if not os.path.exists(os.path.join(os.path.dirname(__file__),"config.yaml")):
+    # 首次运行，创建配置文件
+    with open(os.path.join(_current_dir, "config.yaml"), "w", encoding="utf-8") as f:
+        yaml.safe_dump({'groups': {10000: {'admin_password': '_encrypted_password', 'rcon_port': 25575, 'rest_port': 8212, 'server_address': '192.168.1.100', 'work_mode': 'rcon'}}}, f)
+
 sv = Service(
     name = 'PalServerManage',  #功能名
     use_priv = priv.NORMAL, #使用权限   
@@ -135,9 +140,9 @@ async def send_rest_command(SERVER_ADDRESS, SERVER_PORT, SERVER_PASSWORD , actio
                 return [_success, msg]
             else:  # POST请求返回一个OK
                 return [_success, (await resp.content).decode()]
-        else:  # 其他错误
+        else:  # 其他错误码
             return [_success, f"未知错误，状态码：{resp.status_code}"]
-    except Exception as e:  # 有异常
+    except Exception as e:  # 有异常，通常是超时
         return [_success, f"请求失败，错误信息：{str(e)}"]
 
 
