@@ -8,7 +8,7 @@ if not os.path.exists(root_path):
     os.mkdir(root_path)
 
 # 模块名称
-module_list = ['breeding','rcon']
+module_list = ['breeding','server_manage']
 
 for module in module_list:
     module_path = os.path.join(R.img('PalWorld').path, 'breeding')

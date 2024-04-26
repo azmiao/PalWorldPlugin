@@ -2,4 +2,6 @@ groups:
   10000:
     admin_password: _encrypted_password
     rcon_port: 25575
+    rest_port: 8212
     server_address: 192.168.1.100
+    work_mode: rcon
