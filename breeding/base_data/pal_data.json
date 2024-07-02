@@ -471,6 +471,14 @@
         "power": 1040,
         "alias": ["铁拳猴"]
     },
+    "1004902": {
+        "pal_id": "1004902",
+        "number": 49,
+        "en_name": "Gorirat Terra",
+        "cn_name": "石掌猿",
+        "power": 1030,
+        "alias": ["石掌猴"]
+    },
     "1005001": {
         "pal_id": "1005001",
         "number": 50,
@@ -517,7 +525,15 @@
         "en_name": "Chillet",
         "cn_name": "疾旋鼬",
         "power": 800,
-        "alias": ["臭鼬"]
+        "alias": ["臭鼬", "兄弟"]
+    },
+    "1005502": {
+        "pal_id": "1005502",
+        "number": 55,
+        "en_name": "Chillet Ignis",
+        "cn_name": "桃旋鼬",
+        "power": 790,
+        "alias": ["姐妹"]
     },
     "1005601": {
         "pal_id": "1005601",
@@ -687,6 +703,14 @@
         "power": 640,
         "alias": ["武士"]
     },
+    "1007202": {
+        "pal_id": "1007202",
+        "number": 72,
+        "en_name": "Bushi Noct",
+        "cn_name": "鬼刃武士",
+        "power": 650,
+        "alias": ["鬼武士"]
+    },
     "1007301": {
         "pal_id": "1007301",
         "number": 73,
@@ -711,12 +735,28 @@
         "power": 700,
         "alias": []
     },
+    "1007502": {
+        "pal_id": "1007502",
+        "number": 75,
+        "en_name": "Katress Ignis",
+        "cn_name": "炽巫猫",
+        "power": 690,
+        "alias": []
+    },
     "1007601": {
         "pal_id": "1007601",
         "number": 76,
         "en_name": "Wixen",
         "cn_name": "焰巫狐",
         "power": 1160,
+        "alias": []
+    },
+    "1007602": {
+        "pal_id": "1007602",
+        "number": 76,
+        "en_name": "Wixen Noct",
+        "cn_name": "幽巫狐",
+        "power": 1150,
         "alias": []
     },
     "1007701": {
@@ -919,6 +959,14 @@
         "power": 340,
         "alias": []
     },
+    "1009202": {
+        "pal_id": "1009202",
+        "number": 92,
+        "en_name": "Warsect Terra",
+        "cn_name": "zh_Hans_Text",
+        "power": 350,
+        "alias": []
+    },
     "1009301": {
         "pal_id": "1009301",
         "number": 93,
@@ -943,6 +991,14 @@
         "power": 350,
         "alias": []
     },
+    "1009502": {
+        "pal_id": "1009502",
+        "number": 95,
+        "en_name": "Quivern Botan",
+        "cn_name": "翠羽龙",
+        "power": 340,
+        "alias": []
+    },
     "1009601": {
         "pal_id": "1009601",
         "number": 96,
@@ -951,12 +1007,28 @@
         "power": 10,
         "alias": []
     },
+    "1009602": {
+        "pal_id": "1009602",
+        "number": 96,
+        "en_name": "Blazamut Ryu",
+        "cn_name": "殁殃",
+        "power": 9,
+        "alias": []
+    },
     "1009701": {
         "pal_id": "1009701",
         "number": 97,
         "en_name": "Helzephyr",
         "cn_name": "雷冥鸟",
         "power": 190,
+        "alias": []
+    },
+    "1009702": {
+        "pal_id": "1009702",
+        "number": 97,
+        "en_name": "Helzephyr Lux",
+        "cn_name": "雷鸣鸟",
+        "power": 180,
         "alias": []
     },
     "1009801": {
@@ -973,6 +1045,14 @@
         "en_name": "Menasting",
         "cn_name": "冥凯蝎",
         "power": 260,
+        "alias": []
+    },
+    "1009902": {
+        "pal_id": "1009902",
+        "number": 99,
+        "en_name": "Menasting Terra",
+        "cn_name": "金铠蝎",
+        "power": 250,
         "alias": []
     },
     "1010001": {
@@ -1117,6 +1197,126 @@
         "en_name": "Bellanoir Libero",
         "cn_name": "贝菈露洁",
         "power": 1,
+        "alias": []
+    },
+    "1011301": {
+        "pal_id": "1011301",
+        "number": 113,
+        "en_name": "Selyne",
+        "cn_name": "辉月伊",
+        "power": 345,
+        "alias": []
+    },
+    "1011401": {
+        "pal_id": "1011401",
+        "number": 114,
+        "en_name": "Croajiro",
+        "cn_name": "武道蛙",
+        "power": 795,
+        "alias": []
+    },
+    "1011501": {
+        "pal_id": "1011501",
+        "number": 115,
+        "en_name": "Lullu",
+        "cn_name": "春彩娘",
+        "power": 905,
+        "alias": []
+    },
+    "1011601": {
+        "pal_id": "1011601",
+        "number": 116,
+        "en_name": "Shroomer",
+        "cn_name": "菇咚",
+        "power": 720,
+        "alias": []
+    },
+    "1011602": {
+        "pal_id": "1011602",
+        "number": 116,
+        "en_name": "Shroomer Noct",
+        "cn_name": "菇波",
+        "power": 730,
+        "alias": []
+    },
+    "1011701": {
+        "pal_id": "1011701",
+        "number": 117,
+        "en_name": "Kikit",
+        "cn_name": "球犰",
+        "power": 1125,
+        "alias": []
+    },
+    "1011801": {
+        "pal_id": "1011801",
+        "number": 118,
+        "en_name": "Sootseer",
+        "cn_name": "恐炬灵",
+        "power": 545,
+        "alias": []
+    },
+    "1011901": {
+        "pal_id": "1011901",
+        "number": 119,
+        "en_name": "Prixter",
+        "cn_name": "蛊刺妖",
+        "power": 355,
+        "alias": []
+    },
+    "1012001": {
+        "pal_id": "1012001",
+        "number": 120,
+        "en_name": "Knocklem",
+        "cn_name": "泰锋",
+        "power": 265,
+        "alias": []
+    },
+    "1012101": {
+        "pal_id": "1012101",
+        "number": 121,
+        "en_name": "Yakumo",
+        "cn_name": "八云犬",
+        "power": 945,
+        "alias": []
+    },
+    "1012201": {
+        "pal_id": "1012201",
+        "number": 122,
+        "en_name": "Dogen",
+        "cn_name": "汪宗师",
+        "power": 665,
+        "alias": []
+    },
+    "1012301": {
+        "pal_id": "1012301",
+        "number": 123,
+        "en_name": "Dazemu",
+        "cn_name": "战冠雀",
+        "power": 675,
+        "alias": []
+    },
+    "1012401": {
+        "pal_id": "1012401",
+        "number": 124,
+        "en_name": "Mimog",
+        "cn_name": "旺财",
+        "power": 1200,
+        "alias": []
+    },
+    "1012501": {
+        "pal_id": "1012501",
+        "number": 125,
+        "en_name": "Xenovader",
+        "cn_name": "杰诺贝达",
+        "power": 465,
+        "alias": []
+    },
+    "1012601": {
+        "pal_id": "1012601",
+        "number": 126,
+        "en_name": "Xenogard",
+        "cn_name": "杰诺路达",
+        "power": 435,
         "alias": []
     }
 }
